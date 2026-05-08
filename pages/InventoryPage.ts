@@ -13,6 +13,10 @@ export class InventoryPage {
     this.cartLink = page.locator('[data-test="shopping-cart-link"]');
   }
 
+  async goto() {
+    await this.page.goto('/inventory.html');
+  }
+
   async expectLoaded() {
     await expect(this.page).toHaveURL(/.*inventory.html/);
     await expect(this.title).toBeVisible();

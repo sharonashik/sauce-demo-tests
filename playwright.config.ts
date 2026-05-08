@@ -13,9 +13,26 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
+    // Setup project: logs in once and saves auth state to a file
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    // Tests that need to start logged OUT (login flow tests)
+    {
+      name: 'logged-out',
+      testMatch: '**/login.spec.ts',
       use: { ...devices['Desktop Chrome'] },
+    },
+    // Tests that need to start logged IN (reuses saved state)
+    {
+      name: 'logged-in',
+      testMatch: '**/inventory.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 });
