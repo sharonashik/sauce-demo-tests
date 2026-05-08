@@ -1,28 +1,22 @@
 import { test, expect } from '../fixtures/test-fixtures';
+import { invalidLoginCases, validUsers } from '../fixtures/login-test-data';
 
-test.describe('Login', () => {
-  test.beforeEach(async ({ loginPage }) => {
-    await loginPage.goto();
-  });
+test.describe('Login - invalid credentials', () => {
+  for (const testCase of invalidLoginCases) {
+    test(`shows error for ${testCase.name}`, async ({ loginPage }) => {
+      await loginPage.goto();
+      await loginPage.login(testCase.username, testCase.password);
+      await expect(loginPage.errorMessage).toContainText(testCase.expectedError);
+    });
+  }
+});
 
-  test('standard user can log in', async ({ loginPage, inventoryPage }) => {
-    await loginPage.login('standard_user', 'secret_sauce');
-    await inventoryPage.expectLoaded();
-  });
-
-  test('locked-out user sees an error', async ({ loginPage }) => {
-    await loginPage.login('locked_out_user', 'secret_sauce');
-    await expect(loginPage.errorMessage).toContainText(/locked out/i);
-  });
-
-  test('wrong password shows an error', async ({ loginPage }) => {
-    await loginPage.login('standard_user', 'wrong_password');
-    await expect(loginPage.errorMessage).toContainText(/Username and password do not match/i);
-  });
-
-  test('empty username shows an error', async ({ page, loginPage }) => {
-    await page.getByPlaceholder('Password').fill('secret_sauce');
-    await loginPage.loginButton.click();
-    await expect(loginPage.errorMessage).toContainText(/Username is required/i);
-  });
+test.describe('Login - valid credentials', () => {
+  for (const user of validUsers) {
+    test(`${user.username} can log in`, async ({ loginPage, inventoryPage }) => {
+      await loginPage.goto();
+      await loginPage.login(user.username, user.password);
+      await inventoryPage.expectLoaded();
+    });
+  }
 });
