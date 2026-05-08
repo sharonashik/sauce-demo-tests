@@ -21,7 +21,7 @@ export default defineConfig({
     // Tests that need to start logged OUT (login flow tests)
     {
       name: 'logged-out',
-      testMatch: '**/login.spec.ts',
+      testMatch: ['**/login.spec.ts', '**/visual.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     // Tests that need to start logged IN (reuses saved state)
